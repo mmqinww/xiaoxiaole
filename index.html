@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>消了个消</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 开始页面 -->
+  <div class="page" id="page-start">
+    <div class="start-content">
+      <h1 class="game-title">消了个消</h1>
+      <p class="game-subtitle">堆叠三消 · 轻松解压</p>
+      <button class="btn-primary" id="btn-start">开始游戏</button>
+    </div>
+  </div>
+
+  <!-- 关卡选择页面 -->
+  <div class="page" id="page-levels">
+    <div class="levels-content">
+      <h2 class="levels-title">🎯 选择关卡</h2>
+      <div id="level-grid"></div>
+    </div>
+  </div>
+
+  <!-- 游戏页面 -->
+  <div class="page" id="page-game">
+    <div class="game-content">
+      <!-- 顶部信息栏 -->
+      <div class="game-header">
+        <button class="btn-back" id="btn-back">← 返回</button>
+        <span id="level-title">第1关</span>
+        <div class="game-stats">
+          <span id="blocks-remaining">剩余: 0</span>
+          <span id="timer">00:00</span>
+        </div>
+      </div>
+
+      <!-- 方块游戏区域 -->
+      <div class="blocks-area">
+        <div id="blocks-container"></div>
+      </div>
+
+      <!-- 收集槽 -->
+      <div class="slot-area">
+        <div id="slot-container"></div>
+      </div>
+
+      <!-- 道具区域 -->
+      <div class="powerups">
+        <button class="powerup-btn" id="btn-undo">↩️ 撤回</button>
+        <button class="powerup-btn" id="btn-shuffle">🔀 洗牌</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 脚本加载 -->
+  <script src="js/levels.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
