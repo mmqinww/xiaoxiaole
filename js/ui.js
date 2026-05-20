@@ -99,14 +99,26 @@ const UI = {
     
     const level = LEVELS[game.currentLevel];
     
-    // 计算容器大小
+    // 计算容器的原始大小
     const maxLayer = level.layers - 1;
     const totalOffset = maxLayer * game.layerOffset;
     const containerWidth = level.gridCols * (game.blockSize + 4) + totalOffset + game.blockSize;
     const containerHeight = level.gridRows * (game.blockSize + 4) + totalOffset + game.blockSize;
     
+    // 获取可用空间，确保不超出手机屏幕
+    const blocksArea = document.querySelector('.blocks-area');
+    const availableWidth = blocksArea.clientWidth - 16; // 留点边距
+    const availableHeight = blocksArea.clientHeight - 16;
+    
+    // 计算缩放比例，确保整个牌堆在可视区域内
+    const scaleX = availableWidth / containerWidth;
+    const scaleY = availableHeight / containerHeight;
+    const scale = Math.min(scaleX, scaleY, 1); // 不放大，只缩小
+    
     container.style.width = containerWidth + 'px';
     container.style.height = containerHeight + 'px';
+    container.style.transform = `scale(${scale})`;
+    container.style.transformOrigin = 'center center';
     
     // 按层排序渲染（低层先渲染）
     const sortedBlocks = [...game.blocks]

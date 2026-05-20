@@ -22,10 +22,10 @@ const LEVELS = [
     name: '第1关',
     desc: '热身',
     patternCount: 4,
-    totalBlocks: 21,   // 4种图案，确保能被3整除分配：每种至少3个
+    totalBlocks: 21,
     layers: 2,
-    gridCols: 5,
-    gridRows: 5,
+    gridCols: 4,
+    gridRows: 4,
     stackModes: { stack1x1: 1 }, // 纯1挡1，简单
   },
   {
@@ -34,9 +34,9 @@ const LEVELS = [
     desc: '💀地狱',
     patternCount: 12,
     totalBlocks: 204,
-    layers: 6,
-    gridCols: 9,
-    gridRows: 9,
+    layers: 10,        // 更多层，堆叠更紧凑
+    gridCols: 6,       // 缩小网格范围
+    gridRows: 6,
     stackModes: { stack1x1: 0.2, stack1x2: 0.3, stack1x4: 0.5 },
   },
 ];

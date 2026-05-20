@@ -25,8 +25,8 @@ const Game = {
   lastSlotBlock: null, // 上一个放入槽的方块（用于撤回）
   
   // 游戏配置
-  blockSize: 52,      // 方块大小（px）
-  layerOffset: 8,     // 层间偏移（px）
+  blockSize: 44,      // 方块大小（px），缩小以适配手机
+  layerOffset: 4,     // 层间偏移（px），更紧凑的堆叠
   
   /**
    * 开始关卡

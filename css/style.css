@@ -201,12 +201,14 @@ html, body {
   justify-content: center;
   width: 100%;
   min-height: 200px;
+  max-height: calc(100vh - 220px); /* 留出顶栏+槽位+道具栏空间 */
   overflow: hidden;
 }
 
 #blocks-container {
   position: relative;
   margin: 0 auto;
+  /* transform/scale 由 JS 动态设置 */
 }
 
 /* Block */
@@ -517,7 +519,7 @@ html, body {
 }
 
 /* ============= Responsive ============= */
-@media (max-width: 360px) {
+@media (max-width: 375px) {
   .game-title {
     font-size: 2.5rem;
   }
@@ -532,12 +534,55 @@ html, body {
   }
   
   .slot-item {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
+  }
+  
+  .slot-emoji {
+    font-size: 1.2rem;
   }
   
   .block-emoji {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+  }
+  
+  .game-header {
+    padding: 4px 2px;
+    margin-bottom: 4px;
+  }
+  
+  .powerups {
+    padding: 8px 0;
+    gap: 10px;
+  }
+  
+  .powerup-btn {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+  
+  .slot-area {
+    padding: 8px 0;
+  }
+  
+  #slot-container {
+    padding: 8px;
+    gap: 3px;
+  }
+}
+
+@media (max-width: 320px) {
+  .slot-item {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .slot-emoji {
+    font-size: 1rem;
+  }
+  
+  .block-emoji {
+    font-size: 1.2rem;
   }
 }
 
@@ -547,7 +592,7 @@ html, body {
   }
   
   #level-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .blocks-area {
