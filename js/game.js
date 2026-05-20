@@ -331,18 +331,13 @@ const Game = {
     const patterns = remaining.map(b => b.pattern);
     shuffleArray(patterns);
     
-    // 重新计算层数和每层数量
+    // 重新计算层数和每层数量，使用全范围分布
     const totalRemaining = remaining.length;
     const cols = level.gridCols;
     const rows = level.gridRows;
-    const margin = 1;
-    const centerMinX = margin;
-    const centerMaxX = cols - margin - 1;
-    const centerMinY = margin;
-    const centerMaxY = rows - margin - 1;
     
     // 估算需要多少层
-    const posPerLayer = (centerMaxX - centerMinX + 1) * (centerMaxY - centerMinY + 1);
+    const posPerLayer = cols * rows;
     const layersNeeded = Math.max(3, Math.ceil(totalRemaining / posPerLayer));
     const perLayer = Math.ceil(totalRemaining / layersNeeded);
     
@@ -354,20 +349,20 @@ const Game = {
       const layerPositions = [];
       
       if (layerType === 0) {
-        for (let x = centerMinX; x <= centerMaxX; x++) {
-          for (let y = centerMinY; y <= centerMaxY; y++) {
+        for (let x = 0; x < cols; x++) {
+          for (let y = 0; y < rows; y++) {
             layerPositions.push({ x, y });
           }
         }
       } else if (layerType === 1) {
-        for (let x = centerMinX; x < centerMaxX; x++) {
-          for (let y = centerMinY; y <= centerMaxY; y++) {
+        for (let x = 0; x < cols - 1; x++) {
+          for (let y = 0; y < rows; y++) {
             layerPositions.push({ x: x + 0.5, y });
           }
         }
       } else {
-        for (let x = centerMinX; x < centerMaxX; x++) {
-          for (let y = centerMinY; y < centerMaxY; y++) {
+        for (let x = 0; x < cols - 1; x++) {
+          for (let y = 0; y < rows - 1; y++) {
             layerPositions.push({ x: x + 0.5, y: y + 0.5 });
           }
         }

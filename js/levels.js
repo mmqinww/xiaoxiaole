@@ -131,14 +131,14 @@ function generateLevelBlocks(levelIndex) {
 
 /**
  * 生成四周的方块（1挡1模式）
- * 位于网格边缘，但严格控制在网格范围内
+ * 分布在网格边缘一圈，浅层堆叠（最多2层）
  */
 function generateEdgeBlocks(count, level, allPatterns, startIdx) {
   const blocks = [];
   const cols = level.gridCols;
   const rows = level.gridRows;
   
-  // 四周位置：只使用网格边缘一圈（不超出gridCols x gridRows）
+  // 四周位置：网格边缘一整圈
   const edgePositions = [];
   for (let x = 0; x < cols; x++) {
     edgePositions.push({ x, y: 0 });
@@ -150,7 +150,7 @@ function generateEdgeBlocks(count, level, allPatterns, startIdx) {
   }
   shuffleArray(edgePositions);
   
-  // 分配到2层（浅层叠）
+  // 分配到2层（浅层叠），底层（layer 0和1）
   const layers = 2;
   const perLayer = Math.ceil(count / layers);
   let idx = startIdx;
@@ -179,25 +179,17 @@ function generateEdgeBlocks(count, level, allPatterns, startIdx) {
 /**
  * 生成中间区域的方块（1挡2和1挡4模式）
  * 
- * 布局策略：交替使用3种网格位置
- * - A层（整数坐标）：牌在 (1,1) (1,2) (2,1) (2,2) ...
- * - B层（水平半格偏移）：牌在 (1.5,1) (1.5,2) ... → 每张盖住左右两张A层牌的各一半（1挡2）
- * - C层（双向半格偏移）：牌在 (1.5,1.5) ... → 每张盖住四张下层牌的各1/4（1挡4）
+ * 布局策略：在整个操作区域内随机分布
+ * - A层（整数坐标）：铺满整个网格区域
+ * - B层（水平半格偏移）：在整个区域内随机分布，产生1挡2效果
+ * - C层（双向半格偏移）：在整个区域内随机分布，产生1挡4效果
  * 
- * 循环：A → B → C → A → B → C ...
- * 这样从视觉上能清晰看到1挡2和1挡4的堆叠效果
+ * 使用全部网格范围（0到cols-1），不再局限于中间小区域
  */
 function generateCenterBlocks(count, level, allPatterns, startIdx) {
   const blocks = [];
   const cols = level.gridCols;
   const rows = level.gridRows;
-  
-  // 中心区域范围（留出边缘给1挡1的牌）
-  const margin = 1;
-  const centerMinX = margin;
-  const centerMaxX = cols - margin - 1;
-  const centerMinY = margin;
-  const centerMaxY = rows - margin - 1;
   
   const layers = level.layers;
   const perLayer = Math.ceil(count / layers);
@@ -210,23 +202,23 @@ function generateCenterBlocks(count, level, allPatterns, startIdx) {
     const layerPositions = [];
     
     if (layerType === 0) {
-      // A层：整数网格位置
-      for (let x = centerMinX; x <= centerMaxX; x++) {
-        for (let y = centerMinY; y <= centerMaxY; y++) {
+      // A层：使用整个网格范围
+      for (let x = 0; x < cols; x++) {
+        for (let y = 0; y < rows; y++) {
           layerPositions.push({ x, y });
         }
       }
     } else if (layerType === 1) {
-      // B层：水平偏移半格（1挡2效果 - 盖住左右两张）
-      for (let x = centerMinX; x < centerMaxX; x++) {
-        for (let y = centerMinY; y <= centerMaxY; y++) {
+      // B层：水平偏移半格，分布在整个区域
+      for (let x = 0; x < cols - 1; x++) {
+        for (let y = 0; y < rows; y++) {
           layerPositions.push({ x: x + 0.5, y });
         }
       }
     } else {
-      // C层：双向偏移半格（1挡4效果 - 盖住四角四张）
-      for (let x = centerMinX; x < centerMaxX; x++) {
-        for (let y = centerMinY; y < centerMaxY; y++) {
+      // C层：双向偏移半格，分布在整个区域
+      for (let x = 0; x < cols - 1; x++) {
+        for (let y = 0; y < rows - 1; y++) {
           layerPositions.push({ x: x + 0.5, y: y + 0.5 });
         }
       }
