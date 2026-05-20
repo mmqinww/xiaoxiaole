@@ -34,9 +34,9 @@ const LEVELS = [
     desc: '💀地狱',
     patternCount: 12,
     totalBlocks: 204,
-    layers: 10,        // 更多层，堆叠更紧凑
-    gridCols: 6,       // 缩小网格范围
-    gridRows: 6,
+    layers: 12,        // 更多层，纵向堆叠
+    gridCols: 5,       // 进一步缩小网格，确保不超出屏幕
+    gridRows: 5,
     stackModes: { stack1x1: 0.2, stack1x2: 0.3, stack1x4: 0.5 },
   },
 ];
@@ -131,22 +131,22 @@ function generateLevelBlocks(levelIndex) {
 
 /**
  * 生成四周的方块（1挡1模式）
- * 位于网格边缘，层叠较浅
+ * 位于网格边缘，但严格控制在网格范围内
  */
 function generateEdgeBlocks(count, level, allPatterns, startIdx) {
   const blocks = [];
   const cols = level.gridCols;
   const rows = level.gridRows;
   
-  // 四周位置：第一行、最后一行、第一列、最后一列
+  // 四周位置：只使用网格边缘一圈（不超出gridCols x gridRows）
   const edgePositions = [];
   for (let x = 0; x < cols; x++) {
     edgePositions.push({ x, y: 0 });
-    edgePositions.push({ x, y: rows - 1 });
+    if (rows > 1) edgePositions.push({ x, y: rows - 1 });
   }
   for (let y = 1; y < rows - 1; y++) {
     edgePositions.push({ x: 0, y });
-    edgePositions.push({ x: cols - 1, y });
+    if (cols > 1) edgePositions.push({ x: cols - 1, y });
   }
   shuffleArray(edgePositions);
   
@@ -178,23 +178,23 @@ function generateEdgeBlocks(count, level, allPatterns, startIdx) {
 
 /**
  * 生成中间区域的方块（1挡2和1挡4模式）
- * 位于网格中心，多层深度堆叠
+ * 位于网格中心，多层深度堆叠，严格限制在网格范围内
  */
 function generateCenterBlocks(count, level, allPatterns, startIdx) {
   const blocks = [];
   const cols = level.gridCols;
   const rows = level.gridRows;
   
-  // 中心区域：去掉最外面一圈
+  // 中心区域：去掉最外面一圈（如果网格够大的话）
+  const margin = cols > 3 ? 1 : 0;
   const centerPositions = [];
-  const margin = 1;
   for (let x = margin; x < cols - margin; x++) {
     for (let y = margin; y < rows - margin; y++) {
       centerPositions.push({ x, y });
     }
   }
   
-  // 使用更多层（4-6层深度堆叠）
+  // 使用大量层实现纵向堆叠
   const layers = level.layers;
   const perLayer = Math.ceil(count / layers);
   let idx = startIdx;
@@ -212,7 +212,7 @@ function generateCenterBlocks(count, level, allPatterns, startIdx) {
     shuffleArray(layerPositions);
     
     for (let i = 0; i < layerCount; i++) {
-      // 位置可以重复使用（不同层同位置 = 堆叠）
+      // 位置在中心网格内循环使用（同位置不同层 = 堆叠）
       const pos = layerPositions[i % layerPositions.length];
       
       // 随机选择 stack1x2 或 stack1x4
@@ -222,7 +222,7 @@ function generateCenterBlocks(count, level, allPatterns, startIdx) {
       blocks.push({
         id: idx,
         pattern: allPatterns[idx],
-        layer: layer + 2, // 中间方块从更高层开始，确保在四周方块之上
+        layer: layer + 2, // 中间方块从更高层开始
         gridX: pos.x,
         gridY: pos.y,
         removed: false,
