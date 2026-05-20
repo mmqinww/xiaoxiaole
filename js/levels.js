@@ -33,9 +33,9 @@ const LEVELS = [
     name: '第2关',
     desc: '💀地狱',
     patternCount: 12,
-    totalBlocks: 204,
-    layers: 12,        // 更多层，纵向堆叠
-    gridCols: 5,       // 进一步缩小网格，确保不超出屏幕
+    totalBlocks: 99,   // 99张（12种图案，保证3的倍数可整除）
+    layers: 8,
+    gridCols: 5,
     gridRows: 5,
     stackModes: { stack1x1: 0.2, stack1x2: 0.3, stack1x4: 0.5 },
   },
