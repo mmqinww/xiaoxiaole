@@ -1,85 +1,48 @@
 /**
  * 关卡数据配置
- * 每个关卡定义：图案种类数、方块总数、层数、网格大小
- * 重要：方块总数必须是3的倍数，每种图案数量也必须是3的倍数
  * 
  * 遮挡模式说明：
- * - stack1x1: 1挡1，传统模式，一张牌挡住下面一张牌
- * - stack1x2: 1挡2，一张牌挡住下面2张牌
- * - stack1x4: 1挡4，一张牌挡住下面4张牌
+ * - stack1x1: 1挡1，放在四周
+ * - stack1x2: 1挡2，放在画面中间
+ * - stack1x4: 1挡4，放在画面中间
  * 
- * stackModes 配置每种模式的比例权重，在同一关卡中可以混合使用
+ * 遮挡规则：但凡有一点遮挡都不能直接选中
  */
 
-// 图案主题配置（扩展到12种）
+// 图案主题配置（12种）
 const THEMES = {
   emoji: ['🍎', '🍋', '🍇', '🍊', '🫐', '🍒', '🥝', '🍑', '🍓', '🌽', '🥑', '🍌'],
 };
 const currentTheme = 'emoji';
 
-// 关卡配置
+// 关卡配置（2关）
 const LEVELS = [
   {
     id: 1,
     name: '第1关',
-    desc: '教学关',
+    desc: '热身',
     patternCount: 4,
-    totalBlocks: 60,
-    layers: 3,
-    gridCols: 6,
-    gridRows: 6,
-    stackModes: { stack1x1: 1 }, // 纯1挡1
+    totalBlocks: 21,   // 4种图案，确保能被3整除分配：每种至少3个
+    layers: 2,
+    gridCols: 5,
+    gridRows: 5,
+    stackModes: { stack1x1: 1 }, // 纯1挡1，简单
   },
   {
     id: 2,
     name: '第2关',
-    desc: '热身',
-    patternCount: 6,
-    totalBlocks: 90,
-    layers: 4,
-    gridCols: 7,
-    gridRows: 7,
-    stackModes: { stack1x1: 0.7, stack1x2: 0.3 }, // 引入1挡2
-  },
-  {
-    id: 3,
-    name: '第3关',
-    desc: '入门',
-    patternCount: 8,
-    totalBlocks: 120,
-    layers: 5,
-    gridCols: 7,
-    gridRows: 7,
-    stackModes: { stack1x1: 0.5, stack1x2: 0.3, stack1x4: 0.2 }, // 引入1挡4
-  },
-  {
-    id: 4,
-    name: '第4关',
-    desc: '过渡',
-    patternCount: 10,
-    totalBlocks: 150,
-    layers: 5,
-    gridCols: 8,
-    gridRows: 8,
-    stackModes: { stack1x1: 0.3, stack1x2: 0.4, stack1x4: 0.3 },
-  },
-  {
-    id: 5,
-    name: '第5关',
     desc: '💀地狱',
     patternCount: 12,
     totalBlocks: 204,
     layers: 6,
     gridCols: 9,
     gridRows: 9,
-    stackModes: { stack1x1: 0.2, stack1x2: 0.3, stack1x4: 0.5 }, // 大量1挡4
+    stackModes: { stack1x1: 0.2, stack1x2: 0.3, stack1x4: 0.5 },
   },
 ];
 
 /**
  * 生成关卡方块数据
- * @param {number} levelIndex - 关卡索引 (0-based)
- * @returns {Array} 方块数组
  */
 function generateLevelBlocks(levelIndex) {
   const level = LEVELS[levelIndex];
@@ -101,88 +64,176 @@ function generateLevelBlocks(levelIndex) {
     }
   }
   
+  // 如果因为取整导致总数不够，补齐
+  while (allPatterns.length < level.totalBlocks) {
+    allPatterns.push(patterns[allPatterns.length % level.patternCount]);
+  }
+  // 如果多了就截断
+  allPatterns = allPatterns.slice(0, level.totalBlocks);
+  
   // 随机打乱
   shuffleArray(allPatterns);
   
-  // 将方块分配到各层
+  // 生成方块，根据遮挡模式决定位置布局
   const blocks = [];
-  const blocksPerLayer = Math.ceil(level.totalBlocks / level.layers);
   let patternIdx = 0;
   
-  for (let layer = 0; layer < level.layers; layer++) {
-    const layerBlockCount = Math.min(
-      blocksPerLayer,
-      level.totalBlocks - patternIdx
-    );
+  if (level.stackModes.stack1x4 || level.stackModes.stack1x2) {
+    // 混合模式：1挡1放四周，1挡2和1挡4放中间
+    const totalBlocks = level.totalBlocks;
+    const ratio1x1 = level.stackModes.stack1x1 || 0;
+    const count1x1 = Math.floor(totalBlocks * ratio1x1 / 3) * 3; // 保证3的倍数
+    const countCenter = totalBlocks - count1x1;
     
-    // 为当前层生成随机位置
-    const positions = generateLayerPositions(
-      layerBlockCount,
-      level.gridCols,
-      level.gridRows,
-      layer
-    );
+    // 生成四周位置的方块（1挡1模式）
+    const edgeBlocks = generateEdgeBlocks(count1x1, level, allPatterns, patternIdx);
+    blocks.push(...edgeBlocks);
+    patternIdx += count1x1;
     
-    for (let i = 0; i < layerBlockCount; i++) {
-      blocks.push({
-        id: patternIdx,
-        pattern: allPatterns[patternIdx],
-        layer: layer,
-        gridX: positions[i].x,
-        gridY: positions[i].y,
-        removed: false,
-      });
-      patternIdx++;
+    // 生成中间位置的方块（1挡2和1挡4模式）
+    const centerBlocks = generateCenterBlocks(countCenter, level, allPatterns, patternIdx);
+    blocks.push(...centerBlocks);
+  } else {
+    // 纯1挡1模式（简单关）
+    const blocksPerLayer = Math.ceil(level.totalBlocks / level.layers);
+    
+    for (let layer = 0; layer < level.layers; layer++) {
+      const layerBlockCount = Math.min(
+        blocksPerLayer,
+        level.totalBlocks - patternIdx
+      );
+      
+      const positions = generateLayerPositions(
+        layerBlockCount,
+        level.gridCols,
+        level.gridRows,
+        layer
+      );
+      
+      for (let i = 0; i < layerBlockCount; i++) {
+        blocks.push({
+          id: patternIdx,
+          pattern: allPatterns[patternIdx],
+          layer: layer,
+          gridX: positions[i].x,
+          gridY: positions[i].y,
+          removed: false,
+          stackMode: 'stack1x1',
+          blockers: [],
+        });
+        patternIdx++;
+      }
     }
   }
-  
-  // 建立遮挡关系（基于stackModes）
-  buildBlockRelations(blocks, level);
   
   return blocks;
 }
 
 /**
- * 建立方块之间的遮挡关系
- * 根据关卡的stackModes配置，为每个上层方块设置其遮挡的下层方块列表
+ * 生成四周的方块（1挡1模式）
+ * 位于网格边缘，层叠较浅
  */
-function buildBlockRelations(blocks, level) {
-  const modes = level.stackModes || { stack1x1: 1 };
+function generateEdgeBlocks(count, level, allPatterns, startIdx) {
+  const blocks = [];
+  const cols = level.gridCols;
+  const rows = level.gridRows;
   
-  // 按层从高到低遍历，为每个上层方块分配遮挡模式
-  for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[i];
-    // 随机选择一个遮挡模式
-    block.stackMode = pickStackMode(modes);
-    // blockedBy 将在 updateBlockedStatus 中动态计算
-    block.blockers = []; // 记录遮挡此方块的上层方块id列表
+  // 四周位置：第一行、最后一行、第一列、最后一列
+  const edgePositions = [];
+  for (let x = 0; x < cols; x++) {
+    edgePositions.push({ x, y: 0 });
+    edgePositions.push({ x, y: rows - 1 });
   }
+  for (let y = 1; y < rows - 1; y++) {
+    edgePositions.push({ x: 0, y });
+    edgePositions.push({ x: cols - 1, y });
+  }
+  shuffleArray(edgePositions);
+  
+  // 分配到2层（浅层叠）
+  const layers = 2;
+  const perLayer = Math.ceil(count / layers);
+  let idx = startIdx;
+  
+  for (let layer = 0; layer < layers && idx < startIdx + count; layer++) {
+    const layerCount = Math.min(perLayer, startIdx + count - idx);
+    for (let i = 0; i < layerCount; i++) {
+      const pos = edgePositions[(idx - startIdx) % edgePositions.length];
+      blocks.push({
+        id: idx,
+        pattern: allPatterns[idx],
+        layer: layer,
+        gridX: pos.x,
+        gridY: pos.y,
+        removed: false,
+        stackMode: 'stack1x1',
+        blockers: [],
+      });
+      idx++;
+    }
+  }
+  
+  return blocks;
 }
 
 /**
- * 根据权重随机选择遮挡模式
+ * 生成中间区域的方块（1挡2和1挡4模式）
+ * 位于网格中心，多层深度堆叠
  */
-function pickStackMode(modes) {
-  const entries = Object.entries(modes);
-  const total = entries.reduce((sum, [, w]) => sum + w, 0);
-  let rand = Math.random() * total;
-  for (const [mode, weight] of entries) {
-    rand -= weight;
-    if (rand <= 0) return mode;
+function generateCenterBlocks(count, level, allPatterns, startIdx) {
+  const blocks = [];
+  const cols = level.gridCols;
+  const rows = level.gridRows;
+  
+  // 中心区域：去掉最外面一圈
+  const centerPositions = [];
+  const margin = 1;
+  for (let x = margin; x < cols - margin; x++) {
+    for (let y = margin; y < rows - margin; y++) {
+      centerPositions.push({ x, y });
+    }
   }
-  return entries[0][0];
-}
-
-/**
- * 获取一个遮挡模式对应的最大遮挡下方方块数
- */
-function getStackCount(mode) {
-  switch (mode) {
-    case 'stack1x4': return 4;
-    case 'stack1x2': return 2;
-    case 'stack1x1':
-    default: return 1;
+  
+  // 使用更多层（4-6层深度堆叠）
+  const layers = level.layers;
+  const perLayer = Math.ceil(count / layers);
+  let idx = startIdx;
+  
+  // 确定每个方块的遮挡模式
+  const ratio1x2 = level.stackModes.stack1x2 || 0;
+  const ratio1x4 = level.stackModes.stack1x4 || 0;
+  const totalRatio = ratio1x2 + ratio1x4;
+  
+  for (let layer = 0; layer < layers && idx < startIdx + count; layer++) {
+    const layerCount = Math.min(perLayer, startIdx + count - idx);
+    
+    // 为这层重新打乱中心位置
+    const layerPositions = [...centerPositions];
+    shuffleArray(layerPositions);
+    
+    for (let i = 0; i < layerCount; i++) {
+      // 位置可以重复使用（不同层同位置 = 堆叠）
+      const pos = layerPositions[i % layerPositions.length];
+      
+      // 随机选择 stack1x2 或 stack1x4
+      const rand = Math.random() * totalRatio;
+      const mode = rand < ratio1x2 ? 'stack1x2' : 'stack1x4';
+      
+      blocks.push({
+        id: idx,
+        pattern: allPatterns[idx],
+        layer: layer + 2, // 中间方块从更高层开始，确保在四周方块之上
+        gridX: pos.x,
+        gridY: pos.y,
+        removed: false,
+        stackMode: mode,
+        blockers: [],
+      });
+      idx++;
+    }
   }
+  
+  return blocks;
 }
 
 /**
@@ -204,7 +255,6 @@ function generateLayerPositions(count, cols, rows, layer) {
     positions.push(allPositions[i]);
   }
   
-  // 如果位置不够，允许一些重叠（增加难度）
   while (positions.length < count) {
     const extraPos = {
       x: Math.floor(Math.random() * cols),
@@ -214,6 +264,18 @@ function generateLayerPositions(count, cols, rows, layer) {
   }
   
   return positions;
+}
+
+/**
+ * 获取遮挡模式对应的最大遮挡下方方块数
+ */
+function getStackCount(mode) {
+  switch (mode) {
+    case 'stack1x4': return 4;
+    case 'stack1x2': return 2;
+    case 'stack1x1':
+    default: return 1;
+  }
 }
 
 /**

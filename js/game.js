@@ -128,6 +128,7 @@ const Game = {
   
   /**
    * 检查两个方块是否位置重叠
+   * 规则：但凡有一点遮挡都不能选中（阈值为0）
    */
   checkOverlap(blockA, blockB) {
     // 计算实际像素位置
@@ -135,7 +136,6 @@ const Game = {
     const posB = this.getBlockPosition(blockB);
     
     const size = this.blockSize;
-    const overlapThreshold = size * 0.3; // 30% 重叠即认为遮挡
     
     const overlapX = Math.max(0, 
       Math.min(posA.x + size, posB.x + size) - Math.max(posA.x, posB.x)
@@ -144,7 +144,8 @@ const Game = {
       Math.min(posA.y + size, posB.y + size) - Math.max(posA.y, posB.y)
     );
     
-    return overlapX > overlapThreshold && overlapY > overlapThreshold;
+    // 只要有任何重叠面积就算遮挡
+    return overlapX > 0 && overlapY > 0;
   },
   
   /**
