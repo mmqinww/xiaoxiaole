@@ -239,17 +239,11 @@ html, body {
 
 .block.blocked {
   cursor: not-allowed;
-  background: #e8e8e8;
-  visibility: hidden; /* 默认隐藏被遮挡的方块 */
-}
-
-.block.blocked.partially-visible {
-  visibility: visible; /* 只有被最顶层部分遮挡的才显示 */
-  opacity: 0.6;
+  opacity: 0.55;
   background: #e0e0e0;
 }
 
-.block.blocked.partially-visible::after {
+.block.blocked::after {
   content: '';
   position: absolute;
   top: 0;
