@@ -26,7 +26,7 @@ const Game = {
   
   // 游戏配置
   blockSize: 44,      // 方块大小（px）
-  layerOffset: 3,     // 层间偏移（px），极小偏移让堆叠更紧凑
+  layerOffset: 0,     // 层间偏移为0，上下层完全靠网格坐标偏移来产生错位
   
   /**
    * 开始关卡
@@ -132,10 +132,12 @@ const Game = {
    * 获取方块的实际像素位置
    */
   getBlockPosition(block) {
-    const offset = block.layer * this.layerOffset;
+    // 方块间距（紧凑排列，间距小让错位牌能覆盖更多面积）
+    const gap = 2;
+    const step = this.blockSize + gap;
     return {
-      x: block.gridX * (this.blockSize + 4) + offset,
-      y: block.gridY * (this.blockSize + 4) + offset,
+      x: block.gridX * step,
+      y: block.gridY * step,
     };
   },
   

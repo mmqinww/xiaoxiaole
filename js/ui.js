@@ -99,11 +99,12 @@ const UI = {
     
     const level = LEVELS[game.currentLevel];
     
-    // 计算容器的原始大小
-    const maxLayer = level.layers - 1;
-    const totalOffset = maxLayer * game.layerOffset;
-    const containerWidth = level.gridCols * (game.blockSize + 4) + totalOffset + game.blockSize;
-    const containerHeight = level.gridRows * (game.blockSize + 4) + totalOffset + game.blockSize;
+    // 计算容器的原始大小（基于最大可能坐标）
+    // 需要考虑半格偏移的牌，最大坐标可能是 gridCols - 0.5
+    const gap = 2;
+    const step = game.blockSize + gap;
+    const containerWidth = (level.gridCols) * step + game.blockSize;
+    const containerHeight = (level.gridRows) * step + game.blockSize;
     
     // 获取可用空间，确保不超出手机屏幕
     const blocksArea = document.querySelector('.blocks-area');

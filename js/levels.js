@@ -179,18 +179,20 @@ function generateEdgeBlocks(count, level, allPatterns, startIdx) {
 /**
  * 生成中间区域的方块（1挡2和1挡4模式）
  * 
- * 关键：通过位置偏移实现真正的1挡2/1挡4效果
- * - 1挡2：上层牌放在两张下层牌的中间（水平或垂直偏移半格）
- * - 1挡4：上层牌放在四张下层牌的交叉点（水平+垂直各偏移半格）
+ * 布局策略：交替使用3种网格位置
+ * - A层（整数坐标）：牌在 (1,1) (1,2) (2,1) (2,2) ...
+ * - B层（水平半格偏移）：牌在 (1.5,1) (1.5,2) ... → 每张盖住左右两张A层牌的各一半（1挡2）
+ * - C层（双向半格偏移）：牌在 (1.5,1.5) ... → 每张盖住四张下层牌的各1/4（1挡4）
  * 
- * 使用半格坐标系（gridX/gridY可以是x.5），让上层牌自然覆盖多张下层牌
+ * 循环：A → B → C → A → B → C ...
+ * 这样从视觉上能清晰看到1挡2和1挡4的堆叠效果
  */
 function generateCenterBlocks(count, level, allPatterns, startIdx) {
   const blocks = [];
   const cols = level.gridCols;
   const rows = level.gridRows;
   
-  // 中心区域范围
+  // 中心区域范围（留出边缘给1挡1的牌）
   const margin = 1;
   const centerMinX = margin;
   const centerMaxX = cols - margin - 1;
@@ -203,25 +205,29 @@ function generateCenterBlocks(count, level, allPatterns, startIdx) {
   
   for (let layer = 0; layer < layers && idx < startIdx + count; layer++) {
     const layerCount = Math.min(perLayer, startIdx + count - idx);
-    
-    // 奇数层使用整数网格位置，偶数层使用半格偏移位置
-    // 这样交替产生：偶数层的牌自然覆盖奇数层多张牌
-    const useOffset = (layer % 2 === 1);
+    const layerType = layer % 3; // 0=A(整数), 1=B(水平偏移), 2=C(双向偏移)
     
     const layerPositions = [];
     
-    if (useOffset) {
-      // 半格偏移位置：每张牌位于4张下层牌的交叉点（1挡4效果）
+    if (layerType === 0) {
+      // A层：整数网格位置
+      for (let x = centerMinX; x <= centerMaxX; x++) {
+        for (let y = centerMinY; y <= centerMaxY; y++) {
+          layerPositions.push({ x, y });
+        }
+      }
+    } else if (layerType === 1) {
+      // B层：水平偏移半格（1挡2效果 - 盖住左右两张）
       for (let x = centerMinX; x < centerMaxX; x++) {
-        for (let y = centerMinY; y < centerMaxY; y++) {
-          layerPositions.push({ x: x + 0.5, y: y + 0.5 });
+        for (let y = centerMinY; y <= centerMaxY; y++) {
+          layerPositions.push({ x: x + 0.5, y });
         }
       }
     } else {
-      // 整数格位置
-      for (let x = centerMinX; x <= centerMaxX; x++) {
-        for (let y = centerMinY; y <= centerMaxY; y++) {
-          layerPositions.push({ x: x, y: y });
+      // C层：双向偏移半格（1挡4效果 - 盖住四角四张）
+      for (let x = centerMinX; x < centerMaxX; x++) {
+        for (let y = centerMinY; y < centerMaxY; y++) {
+          layerPositions.push({ x: x + 0.5, y: y + 0.5 });
         }
       }
     }
@@ -230,6 +236,7 @@ function generateCenterBlocks(count, level, allPatterns, startIdx) {
     
     for (let i = 0; i < layerCount; i++) {
       const pos = layerPositions[i % layerPositions.length];
+      const mode = layerType === 0 ? 'stack1x1' : (layerType === 1 ? 'stack1x2' : 'stack1x4');
       
       blocks.push({
         id: idx,
@@ -238,7 +245,7 @@ function generateCenterBlocks(count, level, allPatterns, startIdx) {
         gridX: pos.x,
         gridY: pos.y,
         removed: false,
-        stackMode: useOffset ? 'stack1x4' : 'stack1x2',
+        stackMode: mode,
         blockers: [],
       });
       idx++;
