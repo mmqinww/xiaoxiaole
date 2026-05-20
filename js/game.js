@@ -1,6 +1,12 @@
 /**
  * 核心游戏逻辑
  * 处理方块状态、遮挡判定、收集槽、消除逻辑
+ * 
+ * 遮挡模式：
+ * - stack1x1: 上面1张牌遮挡下面1张牌
+ * - stack1x2: 上面1张牌遮挡下面2张牌
+ * - stack1x4: 上面1张牌遮挡下面4张牌
+ * 一张牌只有它上面的所有遮挡牌都被取走后，才能被选中
  */
 
 const Game = {
@@ -42,7 +48,8 @@ const Game = {
       UI.updateTimer(this.elapsedTime);
     }, 1000);
     
-    // 计算遮挡关系
+    // 建立遮挡关系并计算初始状态
+    this.buildBlockerRelations();
     this.updateBlockedStatus();
     
     // 渲染
@@ -50,27 +57,72 @@ const Game = {
   },
   
   /**
+   * 建立遮挡关系：根据每个上层方块的 stackMode，
+   * 确定它遮挡了哪些下层方块
+   * 
+   * 规则：
+   * - stack1x1: 遮挡下方重叠的1张牌
+   * - stack1x2: 遮挡下方重叠的2张牌
+   * - stack1x4: 遮挡下方重叠的4张牌
+   */
+  buildBlockerRelations() {
+    // 清空所有方块的 blockers 列表
+    this.blocks.forEach(block => {
+      block.blockers = [];
+    });
+    
+    // 按层从高到低排序（高层先处理）
+    const sortedBlocks = [...this.blocks].sort((a, b) => b.layer - a.layer);
+    
+    for (const upperBlock of sortedBlocks) {
+      if (upperBlock.removed) continue;
+      
+      // 获取此方块的遮挡模式能覆盖的下方方块数
+      const maxCover = getStackCount(upperBlock.stackMode || 'stack1x1');
+      
+      // 找到所有在下层且与此方块有位置重叠的方块
+      const overlappingBelow = this.blocks.filter(lower => {
+        if (lower.removed || lower.id === upperBlock.id) return false;
+        if (lower.layer >= upperBlock.layer) return false;
+        return this.checkOverlap(lower, upperBlock);
+      });
+      
+      // 按距离排序，取最近的 maxCover 个
+      const sorted = overlappingBelow.sort((a, b) => {
+        const distA = Math.abs(a.layer - upperBlock.layer);
+        const distB = Math.abs(b.layer - upperBlock.layer);
+        return distA - distB;
+      });
+      
+      const covered = sorted.slice(0, maxCover);
+      
+      // 为被遮挡的方块添加 blocker
+      for (const lowerBlock of covered) {
+        if (!lowerBlock.blockers.includes(upperBlock.id)) {
+          lowerBlock.blockers.push(upperBlock.id);
+        }
+      }
+    }
+  },
+  
+  /**
    * 更新方块遮挡状态
-   * 如果上层方块与下层方块有位置重叠，则下层方块被遮挡
+   * 一张牌只有它上面的所有 blockers 都被移除后，才能被选中
    */
   updateBlockedStatus() {
-    const level = LEVELS[this.currentLevel];
-    
     this.blocks.forEach(block => {
-      block.blocked = false;
-      if (block.removed) return;
+      if (block.removed) {
+        block.blocked = false;
+        return;
+      }
       
-      // 检查是否有更高层的方块遮挡当前方块
-      this.blocks.forEach(other => {
-        if (other.removed || other.id === block.id) return;
-        if (other.layer <= block.layer) return; // 只检查上层
-        
-        // 判断位置是否重叠（考虑偏移）
-        const overlap = this.checkOverlap(block, other);
-        if (overlap) {
-          block.blocked = true;
-        }
+      // 检查所有 blockers 是否都已被移除
+      const activeBlockers = block.blockers.filter(blockerId => {
+        const blocker = this.blocks.find(b => b.id === blockerId);
+        return blocker && !blocker.removed;
       });
+      
+      block.blocked = activeBlockers.length > 0;
     });
   },
   
@@ -125,7 +177,7 @@ const Game = {
     // 将方块加入槽中（按图案分组插入）
     this.addToSlot(block);
     
-    // 更新遮挡关系
+    // 更新遮挡关系（移除方块后，被它遮挡的方块可能变为可点击）
     this.updateBlockedStatus();
     
     // 渲染动画
@@ -292,7 +344,6 @@ const Game = {
     const remaining = this.blocks.filter(b => !b.removed);
     
     // 重新生成位置
-    const allPositions = [];
     for (let layer = 0; layer < level.layers; layer++) {
       const layerBlocks = remaining.filter(b => b.layer === layer);
       const positions = generateLayerPositions(
@@ -307,6 +358,8 @@ const Game = {
       });
     }
     
+    // 重新建立遮挡关系
+    this.buildBlockerRelations();
     this.updateBlockedStatus();
     UI.renderGame(this);
   },
