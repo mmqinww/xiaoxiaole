@@ -57,13 +57,9 @@ const Game = {
   },
   
   /**
-   * 建立遮挡关系：根据每个上层方块的 stackMode，
-   * 确定它遮挡了哪些下层方块
-   * 
-   * 规则：
-   * - stack1x1: 遮挡下方重叠的1张牌
-   * - stack1x2: 遮挡下方重叠的2张牌
-   * - stack1x4: 遮挡下方重叠的4张牌
+   * 建立遮挡关系：
+   * 核心规则 —— 但凡有一丁点视觉重叠，下层方块就被上层遮挡，不能选中。
+   * 不限制数量，上层方块会遮挡它下方所有有重叠的方块。
    */
   buildBlockerRelations() {
     // 清空所有方块的 blockers 列表
@@ -71,35 +67,19 @@ const Game = {
       block.blockers = [];
     });
     
-    // 按层从高到低排序（高层先处理）
-    const sortedBlocks = [...this.blocks].sort((a, b) => b.layer - a.layer);
-    
-    for (const upperBlock of sortedBlocks) {
-      if (upperBlock.removed) continue;
+    // 遍历每个方块，找到所有在它上层且与它有重叠的方块作为 blocker
+    for (const block of this.blocks) {
+      if (block.removed) continue;
       
-      // 获取此方块的遮挡模式能覆盖的下方方块数
-      const maxCover = getStackCount(upperBlock.stackMode || 'stack1x1');
-      
-      // 找到所有在下层且与此方块有位置重叠的方块
-      const overlappingBelow = this.blocks.filter(lower => {
-        if (lower.removed || lower.id === upperBlock.id) return false;
-        if (lower.layer >= upperBlock.layer) return false;
-        return this.checkOverlap(lower, upperBlock);
-      });
-      
-      // 按距离排序，取最近的 maxCover 个
-      const sorted = overlappingBelow.sort((a, b) => {
-        const distA = Math.abs(a.layer - upperBlock.layer);
-        const distB = Math.abs(b.layer - upperBlock.layer);
-        return distA - distB;
-      });
-      
-      const covered = sorted.slice(0, maxCover);
-      
-      // 为被遮挡的方块添加 blocker
-      for (const lowerBlock of covered) {
-        if (!lowerBlock.blockers.includes(upperBlock.id)) {
-          lowerBlock.blockers.push(upperBlock.id);
+      for (const other of this.blocks) {
+        if (other.removed || other.id === block.id) continue;
+        if (other.layer <= block.layer) continue; // 只看上层
+        
+        // 只要有任何重叠，上层就遮挡下层
+        if (this.checkOverlap(block, other)) {
+          if (!block.blockers.includes(other.id)) {
+            block.blockers.push(other.id);
+          }
         }
       }
     }
