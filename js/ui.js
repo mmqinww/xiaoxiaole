@@ -125,6 +125,15 @@ const UI = {
       .filter(b => !b.removed)
       .sort((a, b) => a.layer - b.layer);
     
+    // 计算每个方块的可见性：
+    // - 未被遮挡的：正常显示（clickable）
+    // - 被遮挡且只差一层就能解锁的（紧邻上层）：半透明显示
+    // - 被遮挡且深埋多层的：完全隐藏
+    const activeBlocks = sortedBlocks.filter(b => !b.blocked);
+    const maxActiveLayer = activeBlocks.length > 0 
+      ? Math.max(...activeBlocks.map(b => b.layer)) 
+      : 0;
+    
     sortedBlocks.forEach(block => {
       const pos = game.getBlockPosition(block);
       const el = document.createElement('div');
@@ -133,6 +142,30 @@ const UI = {
       
       if (block.blocked) {
         el.classList.add('blocked');
+        
+        // 判断是否"部分可见"：被遮挡但紧邻可点击层
+        // 只显示那些直接被当前可点击方块遮挡的（差1层）
+        const blockersOfThis = (block.blockers || []).filter(bid => {
+          const b = game.blocks.find(x => x.id === bid);
+          return b && !b.removed;
+        });
+        const minBlockerLayer = blockersOfThis.length > 0
+          ? Math.min(...blockersOfThis.map(bid => {
+              const b = game.blocks.find(x => x.id === bid);
+              return b ? b.layer : Infinity;
+            }))
+          : Infinity;
+        
+        // 如果遮挡它的方块中有可点击的（即最近blocker未被遮挡），则部分可见
+        const hasDirectBlocker = blockersOfThis.some(bid => {
+          const b = game.blocks.find(x => x.id === bid);
+          return b && !b.removed && !b.blocked;
+        });
+        
+        if (hasDirectBlocker) {
+          el.classList.add('partially-visible');
+        }
+        // 否则保持 hidden（深埋的牌不显示）
       } else {
         el.classList.add('clickable');
         el.addEventListener('click', () => {

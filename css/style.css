@@ -238,19 +238,25 @@ html, body {
 }
 
 .block.blocked {
-  opacity: 0.45;
   cursor: not-allowed;
+  background: #e8e8e8;
+  visibility: hidden; /* 默认隐藏被遮挡的方块 */
+}
+
+.block.blocked.partially-visible {
+  visibility: visible; /* 只有被最顶层部分遮挡的才显示 */
+  opacity: 0.6;
   background: #e0e0e0;
 }
 
-.block.blocked::after {
+.block.blocked.partially-visible::after {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(100, 100, 100, 0.2);
+  background: rgba(100, 100, 100, 0.15);
   border-radius: 12px;
 }
 
