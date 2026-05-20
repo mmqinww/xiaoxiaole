@@ -178,55 +178,67 @@ function generateEdgeBlocks(count, level, allPatterns, startIdx) {
 
 /**
  * 生成中间区域的方块（1挡2和1挡4模式）
- * 位于网格中心，多层深度堆叠，严格限制在网格范围内
+ * 
+ * 关键：通过位置偏移实现真正的1挡2/1挡4效果
+ * - 1挡2：上层牌放在两张下层牌的中间（水平或垂直偏移半格）
+ * - 1挡4：上层牌放在四张下层牌的交叉点（水平+垂直各偏移半格）
+ * 
+ * 使用半格坐标系（gridX/gridY可以是x.5），让上层牌自然覆盖多张下层牌
  */
 function generateCenterBlocks(count, level, allPatterns, startIdx) {
   const blocks = [];
   const cols = level.gridCols;
   const rows = level.gridRows;
   
-  // 中心区域：去掉最外面一圈（如果网格够大的话）
-  const margin = cols > 3 ? 1 : 0;
-  const centerPositions = [];
-  for (let x = margin; x < cols - margin; x++) {
-    for (let y = margin; y < rows - margin; y++) {
-      centerPositions.push({ x, y });
-    }
-  }
+  // 中心区域范围
+  const margin = 1;
+  const centerMinX = margin;
+  const centerMaxX = cols - margin - 1;
+  const centerMinY = margin;
+  const centerMaxY = rows - margin - 1;
   
-  // 使用大量层实现纵向堆叠
   const layers = level.layers;
   const perLayer = Math.ceil(count / layers);
   let idx = startIdx;
   
-  // 确定每个方块的遮挡模式
-  const ratio1x2 = level.stackModes.stack1x2 || 0;
-  const ratio1x4 = level.stackModes.stack1x4 || 0;
-  const totalRatio = ratio1x2 + ratio1x4;
-  
   for (let layer = 0; layer < layers && idx < startIdx + count; layer++) {
     const layerCount = Math.min(perLayer, startIdx + count - idx);
     
-    // 为这层重新打乱中心位置
-    const layerPositions = [...centerPositions];
+    // 奇数层使用整数网格位置，偶数层使用半格偏移位置
+    // 这样交替产生：偶数层的牌自然覆盖奇数层多张牌
+    const useOffset = (layer % 2 === 1);
+    
+    const layerPositions = [];
+    
+    if (useOffset) {
+      // 半格偏移位置：每张牌位于4张下层牌的交叉点（1挡4效果）
+      for (let x = centerMinX; x < centerMaxX; x++) {
+        for (let y = centerMinY; y < centerMaxY; y++) {
+          layerPositions.push({ x: x + 0.5, y: y + 0.5 });
+        }
+      }
+    } else {
+      // 整数格位置
+      for (let x = centerMinX; x <= centerMaxX; x++) {
+        for (let y = centerMinY; y <= centerMaxY; y++) {
+          layerPositions.push({ x: x, y: y });
+        }
+      }
+    }
+    
     shuffleArray(layerPositions);
     
     for (let i = 0; i < layerCount; i++) {
-      // 位置在中心网格内循环使用（同位置不同层 = 堆叠）
       const pos = layerPositions[i % layerPositions.length];
-      
-      // 随机选择 stack1x2 或 stack1x4
-      const rand = Math.random() * totalRatio;
-      const mode = rand < ratio1x2 ? 'stack1x2' : 'stack1x4';
       
       blocks.push({
         id: idx,
         pattern: allPatterns[idx],
-        layer: layer + 2, // 中间方块从更高层开始
+        layer: layer + 2,
         gridX: pos.x,
         gridY: pos.y,
         removed: false,
-        stackMode: mode,
+        stackMode: useOffset ? 'stack1x4' : 'stack1x2',
         blockers: [],
       });
       idx++;
