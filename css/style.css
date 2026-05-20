@@ -239,19 +239,13 @@ html, body {
 
 .block.blocked {
   cursor: not-allowed;
-  opacity: 0.55;
-  background: #e0e0e0;
+  opacity: 0.85;
+  background: #f0f0f0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-.block.blocked::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(100, 100, 100, 0.15);
-  border-radius: 12px;
+.block.blocked .block-emoji {
+  opacity: 0.7;
 }
 
 .block-emoji {
