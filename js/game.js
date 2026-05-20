@@ -316,6 +316,7 @@ const Game = {
   
   /**
    * 道具：洗牌
+   * 重新分配所有剩余方块的位置，保持1挡2/1挡4的交替层布局
    */
   useShuffle() {
     if (this.shuffleUsed) return;
@@ -326,19 +327,64 @@ const Game = {
     // 收集未移除的方块
     const remaining = this.blocks.filter(b => !b.removed);
     
-    // 重新生成位置
-    for (let layer = 0; layer < level.layers; layer++) {
-      const layerBlocks = remaining.filter(b => b.layer === layer);
-      const positions = generateLayerPositions(
-        layerBlocks.length,
-        level.gridCols,
-        level.gridRows,
-        layer
-      );
-      layerBlocks.forEach((block, i) => {
-        block.gridX = positions[i].x;
-        block.gridY = positions[i].y;
-      });
+    // 打乱图案顺序
+    const patterns = remaining.map(b => b.pattern);
+    shuffleArray(patterns);
+    
+    // 重新计算层数和每层数量
+    const totalRemaining = remaining.length;
+    const cols = level.gridCols;
+    const rows = level.gridRows;
+    const margin = 1;
+    const centerMinX = margin;
+    const centerMaxX = cols - margin - 1;
+    const centerMinY = margin;
+    const centerMaxY = rows - margin - 1;
+    
+    // 估算需要多少层
+    const posPerLayer = (centerMaxX - centerMinX + 1) * (centerMaxY - centerMinY + 1);
+    const layersNeeded = Math.max(3, Math.ceil(totalRemaining / posPerLayer));
+    const perLayer = Math.ceil(totalRemaining / layersNeeded);
+    
+    let idx = 0;
+    for (let layer = 0; layer < layersNeeded && idx < totalRemaining; layer++) {
+      const layerCount = Math.min(perLayer, totalRemaining - idx);
+      const layerType = layer % 3; // 0=整数, 1=水平偏移, 2=双向偏移
+      
+      const layerPositions = [];
+      
+      if (layerType === 0) {
+        for (let x = centerMinX; x <= centerMaxX; x++) {
+          for (let y = centerMinY; y <= centerMaxY; y++) {
+            layerPositions.push({ x, y });
+          }
+        }
+      } else if (layerType === 1) {
+        for (let x = centerMinX; x < centerMaxX; x++) {
+          for (let y = centerMinY; y <= centerMaxY; y++) {
+            layerPositions.push({ x: x + 0.5, y });
+          }
+        }
+      } else {
+        for (let x = centerMinX; x < centerMaxX; x++) {
+          for (let y = centerMinY; y < centerMaxY; y++) {
+            layerPositions.push({ x: x + 0.5, y: y + 0.5 });
+          }
+        }
+      }
+      
+      shuffleArray(layerPositions);
+      
+      for (let i = 0; i < layerCount; i++) {
+        const block = remaining[idx];
+        const pos = layerPositions[i % layerPositions.length];
+        block.gridX = pos.x;
+        block.gridY = pos.y;
+        block.layer = layer + 2;
+        block.pattern = patterns[idx];
+        block.stackMode = layerType === 0 ? 'stack1x1' : (layerType === 1 ? 'stack1x2' : 'stack1x4');
+        idx++;
+      }
     }
     
     // 重新建立遮挡关系
