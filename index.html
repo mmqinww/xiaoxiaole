@@ -9,19 +9,25 @@
 <body>
   <!-- 开始页面 -->
   <div class="page" id="page-start">
+    <div class="start-bg"></div>
     <div class="start-content">
-      <div class="floating-apple"><img src="assets/apple-mascot.png" alt=""></div>
-      <div class="mascot-area"><img src="assets/mascot.png" alt="水果伙伴们" class="mascot-img"></div>
-      <h1 class="game-title">消了个消</h1>
-      <p class="game-subtitle">水果消消乐 · 鲜果三消</p>
-      <button class="btn-primary" id="btn-start">🍎 开始游戏</button>
+      <div class="shop-scene">
+        <img src="assets/shop-header.png" alt="" class="shop-img">
+        <div class="shop-title-overlay">
+          <h1 class="game-title">消了个消</h1>
+          <p class="game-subtitle">水果消消乐</p>
+        </div>
+      </div>
+      <div class="start-actions">
+        <button class="btn-primary" id="btn-start">开始游戏</button>
+        <img src="assets/fruit-crate.png" alt="" class="crate-decor">
+      </div>
     </div>
   </div>
 
   <!-- 关卡选择页面 -->
   <div class="page" id="page-levels">
     <div class="levels-content">
-      <div class="levels-banner"><img src="assets/banner-decor.png" alt="" class="banner-img"></div>
       <h2 class="levels-title">🍎 选择关卡</h2>
       <div id="level-grid"></div>
     </div>
