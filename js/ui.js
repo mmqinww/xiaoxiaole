@@ -60,15 +60,21 @@ const UI = {
     LEVELS.forEach((level, index) => {
       const card = document.createElement('div');
       card.className = 'level-card';
+      card.dataset.levelId = level.id;
       
       const bestTime = Game.getBestTime(index);
-      const bestTimeText = bestTime ? `🏆 最佳: ${bestTime}s` : '未通关';
+      const bestTimeText = bestTime ? `🏆 最佳: ${bestTime}s` : '🏆 最佳: --';
+      const basketAsset = level.basket || 'basket-1';
       
       card.innerHTML = `
-        <div class="level-number">${level.name}</div>
-        <div class="level-desc">${level.desc}</div>
-        <div class="level-info">${level.patternCount}种图案 · ${level.totalBlocks}方块</div>
-        <div class="level-best">${bestTimeText}</div>
+        <div class="level-basket">
+          <img src="assets/${basketAsset}.png" alt="" class="basket-img">
+          <div class="level-badge">${level.name}</div>
+        </div>
+        <div class="level-info-bar">
+          <span class="level-desc">${level.desc}</span>
+          <span class="level-best">${bestTimeText}</span>
+        </div>
       `;
       
       card.addEventListener('click', () => {

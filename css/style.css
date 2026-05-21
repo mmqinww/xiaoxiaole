@@ -145,46 +145,65 @@ body .page {
 }
 
 .level-card {
-  background: rgba(255,255,255,0.95);
+  background: #fff;
   border-radius: 16px;
-  padding: 16px;
-  text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  border-left: 4px solid #795548;
-  position: relative;
+  border: none;
   overflow: hidden;
 }
 
 .level-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(93, 64, 55, 0.3);
-  border-left-color: #5D4037;
 }
 
 .level-card:active {
   transform: scale(0.97);
 }
 
-.level-number {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #4E342E;
-  margin-bottom: 4px;
+/* Basket image container (square aspect ratio) */
+.level-basket {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  background: #FFF8E1;
+}
+
+.basket-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+
+.level-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #FF6D00;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.level-info-bar {
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .level-desc {
   font-size: 0.85rem;
-  color: #795548;
+  color: #5D4037;
   font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.level-info {
-  font-size: 0.75rem;
-  color: #888;
-  margin-bottom: 4px;
 }
 
 .level-best {
@@ -195,16 +214,16 @@ body .page {
 
 /* ============= Game Page ============= */
 #page-game {
-  background: url('../assets/game-bg.jpg') center/cover no-repeat fixed;
-  background-color: #FFF8E1;
+  background: url('../assets/basket-board-bg.jpg') center/cover no-repeat;
+  background-color: #8B6914;
 }
 
-/* Subtle overlay for clarity */
+/* No extra overlay — basket image provides its own context */
 #page-game::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.08);
   pointer-events: none;
 }
 
@@ -219,7 +238,7 @@ body .page {
   z-index: 1;
 }
 
-/* Header - frosted glass */
+/* Header - warm frosted glass */
 .game-header {
   width: 100%;
   display: flex;
@@ -227,18 +246,19 @@ body .page {
   align-items: center;
   padding: 10px 12px;
   margin-bottom: 8px;
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  background: rgba(255, 248, 225, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  color: #5D4037;
 }
 
 .btn-back {
   padding: 8px 16px;
   font-size: 0.85rem;
-  background: rgba(93, 64, 55, 0.1);
-  color: #4E342E;
+  background: rgba(93, 64, 55, 0.12);
+  color: #5D4037;
   border: none;
   border-radius: 20px;
   cursor: pointer;
@@ -247,24 +267,24 @@ body .page {
 }
 
 .btn-back:hover {
-  background: rgba(93, 64, 55, 0.2);
+  background: rgba(93, 64, 55, 0.22);
 }
 
 #level-title {
   font-size: 1rem;
-  color: #4E342E;
+  color: #5D4037;
   font-weight: 700;
 }
 
 .game-stats {
   display: flex;
   gap: 12px;
-  color: #4E342E;
+  color: #5D4037;
   font-size: 0.85rem;
   font-weight: 500;
 }
 
-/* Blocks Area */
+/* Blocks Area — subtle warm overlay to feel "inside" the basket */
 .blocks-area {
   flex: 1;
   display: flex;
@@ -274,6 +294,7 @@ body .page {
   min-height: 200px;
   max-height: calc(100vh - 220px);
   overflow: hidden;
+  background: rgba(255, 248, 225, 0.15);
 }
 
 #blocks-container {
@@ -349,10 +370,10 @@ body .page {
   pointer-events: none;
 }
 
-/* Slot Area - frosted glass */
+/* Slot Area - warm frosted glass */
 .slot-area {
   width: 100%;
-  padding: 12px 0;
+  padding: 12px 0 0;
 }
 
 #slot-container {
@@ -360,13 +381,13 @@ body .page {
   justify-content: center;
   gap: 4px;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 248, 225, 0.88);
+  border-radius: 12px 12px 0 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   min-height: 56px;
-  border: 2px solid rgba(121, 85, 72, 0.2);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: none;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
 }
 
 .slot-item {
@@ -397,12 +418,17 @@ body .page {
   line-height: 1;
 }
 
-/* Powerups */
+/* Powerups - warm frosted glass */
 .powerups {
   display: flex;
   justify-content: center;
   gap: 16px;
-  padding: 12px 0;
+  padding: 10px 16px;
+  background: rgba(255, 248, 225, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 20px;
+  margin-bottom: 4px;
 }
 
 .powerup-btn {
