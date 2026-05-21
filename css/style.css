@@ -107,7 +107,8 @@ body .page {
 #page-levels {
   background: url('../assets/wood-bg.jpg') center/cover no-repeat;
   background-color: #5D4037;
-  padding: 20px;
+  padding: 0;
+  justify-content: flex-start;
 }
 
 /* Dark overlay for readability */
@@ -115,100 +116,153 @@ body .page {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(30,15,5,0.52);
   pointer-events: none;
 }
 
 .levels-content {
   width: 100%;
-  max-width: 400px;
-  max-height: 100%;
+  max-width: 480px;
+  height: 100%;
   overflow-y: auto;
   position: relative;
   z-index: 1;
+  padding: 20px 0 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .levels-title {
-  font-size: 1.6rem;
-  color: #fff;
+  font-size: 1.5rem;
+  color: #FFE0B2;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   font-weight: 700;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  letter-spacing: 0.05em;
+  padding: 0 20px;
 }
 
+/* ---- Shelf Row ---- */
 #level-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-bottom: 24px;
 }
 
+/* Each shelf row holds one basket */
+.shelf-row {
+  display: flex;
+  align-items: flex-end;
+  padding: 0 28px 0 28px;
+  margin-bottom: 0;
+  position: relative;
+}
+
+/* The wooden plank under each basket */
+.shelf-plank {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  background: linear-gradient(180deg, #A0522D 0%, #8B4513 40%, #6B3410 100%);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.12);
+  border-radius: 3px;
+}
+
+/* Wood grain lines on plank */
+.shelf-plank::after {
+  content: '';
+  position: absolute;
+  inset: 3px 0 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 40px,
+    rgba(0,0,0,0.08) 40px,
+    rgba(0,0,0,0.08) 41px
+  );
+}
+
+/* Vertical side supports */
+.shelf-row::before,
+.shelf-row::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 14px;
+  height: calc(100% + 24px);
+  background: linear-gradient(180deg, #7B3F1E 0%, #5C2E0E 100%);
+  box-shadow: inset 1px 0 rgba(255,255,255,0.1);
+  border-radius: 3px 3px 0 0;
+}
+.shelf-row::before { left: 8px; }
+.shelf-row::after  { right: 8px; }
+
+/* The basket card sitting on the shelf */
 .level-card {
-  background: #fff;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  background: transparent;
   border: none;
-  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease;
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+  width: 130px;
+  padding-bottom: 18px; /* sit above the plank */
 }
 
 .level-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(93, 64, 55, 0.3);
+  transform: translateY(-6px);
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
 }
 
 .level-card:active {
-  transform: scale(0.97);
+  transform: translateY(-2px) scale(0.97);
 }
 
-/* Basket image container (square aspect ratio) */
+/* Basket image */
 .level-basket {
   position: relative;
   width: 100%;
-  padding-top: 100%;
-  background: #FFF8E1;
 }
 
 .basket-img {
-  position: absolute;
-  inset: 0;
   width: 100%;
-  height: 100%;
+  height: auto;
+  display: block;
   object-fit: contain;
-  padding: 8px;
 }
 
+/* Level number badge — small tag hanging on basket */
 .level-badge {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   background: #FF6D00;
   color: #fff;
-  font-size: 0.75rem;
-  padding: 3px 8px;
+  font-size: 0.82rem;
+  padding: 3px 12px;
   border-radius: 20px;
-  font-weight: 600;
-  line-height: 1.4;
+  font-weight: 700;
+  line-height: 1.5;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  white-space: nowrap;
 }
 
-.level-info-bar {
-  padding: 8px 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.level-desc {
-  font-size: 0.85rem;
-  color: #5D4037;
-  font-weight: 600;
-}
-
+/* Best time shown below basket, on the plank area */
 .level-best {
-  font-size: 0.75rem;
-  color: #FF6D00;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: #FFE0B2;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
   font-weight: 500;
 }
 
@@ -657,13 +711,8 @@ body .page {
     width: 50px;
   }
 
-  #level-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
   .level-card {
-    padding: 12px;
+    width: 110px;
   }
 
   .slot-item {
@@ -728,8 +777,8 @@ body .page {
     font-size: 3.5rem;
   }
 
-  #level-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .level-card {
+    width: 160px;
   }
 
   .blocks-area {

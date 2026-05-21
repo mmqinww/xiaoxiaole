@@ -58,31 +58,37 @@ const UI = {
     grid.innerHTML = '';
     
     LEVELS.forEach((level, index) => {
+      const bestTime = Game.getBestTime(index);
+      const bestTimeText = bestTime ? `🏆 ${bestTime}s` : '🏆 --';
+      const basketAsset = level.basket || 'basket-1';
+
+      // Shelf row wrapping the card
+      const row = document.createElement('div');
+      row.className = 'shelf-row';
+
       const card = document.createElement('div');
       card.className = 'level-card';
       card.dataset.levelId = level.id;
-      
-      const bestTime = Game.getBestTime(index);
-      const bestTimeText = bestTime ? `🏆 最佳: ${bestTime}s` : '🏆 最佳: --';
-      const basketAsset = level.basket || 'basket-1';
-      
+
       card.innerHTML = `
         <div class="level-basket">
           <img src="assets/${basketAsset}.png" alt="" class="basket-img">
           <div class="level-badge">${level.name}</div>
-        </div>
-        <div class="level-info-bar">
-          <span class="level-desc">${level.desc}</span>
-          <span class="level-best">${bestTimeText}</span>
+          <div class="level-best">${bestTimeText}</div>
         </div>
       `;
-      
+
       card.addEventListener('click', () => {
         this.showPage('game');
         Game.startLevel(index);
       });
-      
-      grid.appendChild(card);
+
+      const plank = document.createElement('div');
+      plank.className = 'shelf-plank';
+
+      row.appendChild(card);
+      row.appendChild(plank);
+      grid.appendChild(row);
     });
   },
   
