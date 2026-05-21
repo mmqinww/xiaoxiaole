@@ -217,37 +217,48 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 8px;
   background: #fff;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-  transition: all 0.2s ease;
+  border: 1.5px solid #d4d4d4;
+  border-bottom: 4px solid #b0b0b0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
+  transition: all 0.15s ease;
   cursor: pointer;
 }
 
 .block.clickable {
-  background: #fff;
+  background: #ffffff;
+  border-color: #c8c8c8;
+  border-bottom-color: #999;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.08);
 }
 
 .block.clickable:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  transform: scale(1.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 6px 16px rgba(0,0,0,0.1);
+  border-color: #4CAF50;
+  border-bottom-color: #388E3C;
 }
 
 .block.clickable:active {
-  transform: scale(0.95);
+  transform: scale(0.96);
+  border-bottom-width: 2px;
+  margin-top: 2px;
 }
 
 .block.blocked {
-  cursor: not-allowed;
+  cursor: default;
   opacity: 1;
-  background: #e8e8e8;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  border: 1px solid #d0d0d0;
+  background: #ffffff;
+  border-color: #d4d4d4;
+  border-bottom: 4px solid #b0b0b0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.05);
+  pointer-events: none;
 }
 
 .block.blocked .block-emoji {
-  opacity: 0.35;
-  filter: grayscale(1);
+  opacity: 1;
+  filter: none;
 }
 
 .block-emoji {
