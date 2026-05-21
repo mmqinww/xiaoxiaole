@@ -23,10 +23,10 @@ const LEVELS = [
     desc: '热身',
     patternCount: 3,
     totalBlocks: 18,
-    layers: 2,
+    layers: 3,
     gridCols: 4,
     gridRows: 4,
-    stackModes: { stack1x1: 1 }, // 纯1挡1，简单
+    stackModes: { stack1x1: 0.4, stack1x2: 0.3, stack1x4: 0.3 },
   },
   {
     id: 2,
