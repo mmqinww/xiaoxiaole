@@ -147,43 +147,57 @@ body .page {
 #level-grid {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  padding-bottom: 24px;
+  gap: 32px;
+  padding: 0 0 32px;
 }
 
-/* Each shelf row holds one basket */
+/* Each shelf row: baskets sit side-by-side on one plank */
 .shelf-row {
   display: flex;
   align-items: flex-end;
-  padding: 0 28px 0 28px;
-  margin-bottom: 0;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 20px 22px; /* 22px = plank height + gap */
   position: relative;
 }
 
-/* The wooden plank under each basket */
+/* The wooden plank under the row */
 .shelf-plank {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 18px;
-  background: linear-gradient(180deg, #A0522D 0%, #8B4513 40%, #6B3410 100%);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.12);
-  border-radius: 3px;
+  height: 20px;
+  background: linear-gradient(180deg, #C68642 0%, #A0522D 35%, #7B3810 100%);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.55), inset 0 2px 0 rgba(255,220,150,0.2);
+  border-radius: 4px;
+  z-index: 1;
 }
 
-/* Wood grain lines on plank */
+/* Wood grain on plank */
+.shelf-plank::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px, transparent 38px,
+    rgba(0,0,0,0.07) 38px, rgba(0,0,0,0.07) 39px
+  );
+  border-radius: 4px;
+}
+
+/* Shadow under plank for depth */
 .shelf-plank::after {
   content: '';
   position: absolute;
-  inset: 3px 0 3px;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent 0px,
-    transparent 40px,
-    rgba(0,0,0,0.08) 40px,
-    rgba(0,0,0,0.08) 41px
-  );
+  bottom: -8px;
+  left: 4px;
+  right: 4px;
+  height: 8px;
+  background: rgba(0,0,0,0.3);
+  filter: blur(4px);
+  border-radius: 50%;
 }
 
 /* Vertical side supports */
@@ -192,78 +206,85 @@ body .page {
   content: '';
   position: absolute;
   bottom: 0;
-  width: 14px;
-  height: calc(100% + 24px);
-  background: linear-gradient(180deg, #7B3F1E 0%, #5C2E0E 100%);
-  box-shadow: inset 1px 0 rgba(255,255,255,0.1);
+  width: 12px;
+  height: calc(100% + 32px);
+  background: linear-gradient(90deg, #8B4513 0%, #6B3410 50%, #7B3F1E 100%);
+  box-shadow: inset 1px 0 rgba(255,255,255,0.12), 2px 0 6px rgba(0,0,0,0.3);
   border-radius: 3px 3px 0 0;
+  z-index: 2;
 }
-.shelf-row::before { left: 8px; }
-.shelf-row::after  { right: 8px; }
+.shelf-row::before { left: 4px; }
+.shelf-row::after  { right: 4px; }
 
-/* The basket card sitting on the shelf */
+/* Each basket card sitting on the shelf */
 .level-card {
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: transform 0.18s ease, filter 0.18s ease;
+  transition: transform 0.2s ease, filter 0.2s ease;
   position: relative;
-  z-index: 2;
-  margin: 0 auto;
-  width: 130px;
-  padding-bottom: 18px; /* sit above the plank */
+  z-index: 3;
+  flex: 1;
+  max-width: 140px;
 }
 
 .level-card:hover {
-  transform: translateY(-6px);
-  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
+  transform: translateY(-8px);
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,0.55));
 }
 
 .level-card:active {
-  transform: translateY(-2px) scale(0.97);
+  transform: translateY(-3px) scale(0.97);
 }
 
-/* Basket image */
+/* Basket image container */
 .level-basket {
   position: relative;
   width: 100%;
 }
 
+/* PNG basket — use multiply to blend out white background */
 .basket-img {
   width: 100%;
   height: auto;
   display: block;
   object-fit: contain;
+  mix-blend-mode: multiply;
 }
 
-/* Level number badge — small tag hanging on basket */
+/* Level number badge */
 .level-badge {
   position: absolute;
-  top: 10px;
+  top: 8px;
   left: 50%;
   transform: translateX(-50%);
   background: #FF6D00;
   color: #fff;
-  font-size: 0.82rem;
-  padding: 3px 12px;
+  font-size: 0.78rem;
+  padding: 2px 10px;
   border-radius: 20px;
   font-weight: 700;
   line-height: 1.5;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   white-space: nowrap;
+  z-index: 4;
 }
 
-/* Best time shown below basket, on the plank area */
+/* Best time shown below badge */
 .level-best {
   position: absolute;
-  bottom: 0;
+  bottom: 6px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.7rem;
-  color: #FFE0B2;
+  font-size: 0.68rem;
+  color: #FFF8E1;
   white-space: nowrap;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
-  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  font-weight: 600;
+  z-index: 4;
+  background: rgba(0,0,0,0.25);
+  padding: 1px 6px;
+  border-radius: 10px;
 }
 
 /* ============= Game Page ============= */

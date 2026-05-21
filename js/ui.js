@@ -56,40 +56,46 @@ const UI = {
   renderLevelSelect() {
     const grid = document.getElementById('level-grid');
     grid.innerHTML = '';
-    
-    LEVELS.forEach((level, index) => {
-      const bestTime = Game.getBestTime(index);
-      const bestTimeText = bestTime ? `🏆 ${bestTime}s` : '🏆 --';
-      const basketAsset = level.basket || 'basket-1';
 
-      // Shelf row wrapping the card
+    // Group levels into rows of 2 per shelf
+    const COLS = 2;
+    for (let i = 0; i < LEVELS.length; i += COLS) {
       const row = document.createElement('div');
       row.className = 'shelf-row';
 
-      const card = document.createElement('div');
-      card.className = 'level-card';
-      card.dataset.levelId = level.id;
+      const rowLevels = LEVELS.slice(i, i + COLS);
+      rowLevels.forEach((level, j) => {
+        const index = i + j;
+        const bestTime = Game.getBestTime(index);
+        const bestTimeText = bestTime ? `🏆 ${bestTime}s` : '🏆 --';
+        const basketAsset = level.basket || 'basket-1';
 
-      card.innerHTML = `
-        <div class="level-basket">
-          <img src="assets/${basketAsset}.png" alt="" class="basket-img">
-          <div class="level-badge">${level.name}</div>
-          <div class="level-best">${bestTimeText}</div>
-        </div>
-      `;
+        const card = document.createElement('div');
+        card.className = 'level-card';
+        card.dataset.levelId = level.id;
 
-      card.addEventListener('click', () => {
-        this.showPage('game');
-        Game.startLevel(index);
+        card.innerHTML = `
+          <div class="level-basket">
+            <img src="assets/${basketAsset}.png" alt="" class="basket-img">
+            <div class="level-badge">${level.name}</div>
+            <div class="level-best">${bestTimeText}</div>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          this.showPage('game');
+          Game.startLevel(index);
+        });
+
+        row.appendChild(card);
       });
 
       const plank = document.createElement('div');
       plank.className = 'shelf-plank';
-
-      row.appendChild(card);
       row.appendChild(plank);
+
       grid.appendChild(row);
-    });
+    }
   },
   
   /**
