@@ -20,6 +20,16 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* 加载状态：隐藏内容直到背景加载完 */
+body.loading .page {
+  opacity: 0;
+}
+
+body .page {
+  transition: opacity 0.4s ease;
+  opacity: 1;
+}
+
 /* ============= Pages ============= */
 .page {
   display: none;
@@ -38,7 +48,8 @@ html, body {
 
 /* ============= Start Page ============= */
 #page-start {
-  background: url('../assets/start-bg-v2.png') center/cover no-repeat;
+  background: url('../assets/start-bg-v3.jpg') center/cover no-repeat;
+  background-color: #FFF8E1; /* 兜底色，图片加载前显示 */
   padding: 0;
   justify-content: center;
   align-items: center;
@@ -94,7 +105,8 @@ html, body {
 
 /* ============= Level Select Page ============= */
 #page-levels {
-  background: url('../assets/wood-bg.png') center/cover no-repeat;
+  background: url('../assets/wood-bg.jpg') center/cover no-repeat;
+  background-color: #5D4037;
   padding: 20px;
 }
 
@@ -183,7 +195,8 @@ html, body {
 
 /* ============= Game Page ============= */
 #page-game {
-  background: url('../assets/game-bg.png') center/cover no-repeat fixed;
+  background: url('../assets/game-bg.jpg') center/cover no-repeat fixed;
+  background-color: #FFF8E1;
 }
 
 /* Subtle overlay for clarity */

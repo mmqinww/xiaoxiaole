@@ -5,8 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>消了个消</title>
   <link rel="stylesheet" href="css/style.css">
+  <!-- 预加载背景图 -->
+  <link rel="preload" as="image" href="assets/start-bg-v3.jpg">
 </head>
-<body>
+<body class="loading">
+  <script>
+    // 背景图加载完成后再显示页面内容
+    const bgImg = new Image();
+    bgImg.onload = function() { document.body.classList.remove('loading'); };
+    bgImg.onerror = function() { document.body.classList.remove('loading'); };
+    bgImg.src = 'assets/start-bg-v3.jpg';
+    // 超时兜底：2秒后无论如何都显示
+    setTimeout(function() { document.body.classList.remove('loading'); }, 2000);
+  </script>
   <!-- 开始页面 -->
   <div class="page" id="page-start">
     <div class="start-content">
