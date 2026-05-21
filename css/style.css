@@ -38,7 +38,7 @@ html, body {
 
 /* ============= Start Page ============= */
 #page-start {
-  background: url('../assets/start-bg.png') center top/cover no-repeat;
+  background: url('../assets/start-bg-v2.png') center/cover no-repeat;
   padding: 0;
   justify-content: center;
   align-items: center;
@@ -48,8 +48,6 @@ html, body {
   text-align: center;
   animation: fadeInUp 0.6s ease;
   padding: 20px;
-  /* 内容放在页面垂直中心偏下（避开顶部遮阳棚装饰） */
-  margin-top: 15vh;
 }
 
 .game-title {
