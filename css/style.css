@@ -116,7 +116,7 @@ body .page {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(30,15,5,0.52);
+  background: rgba(30,15,5,0.30);
   pointer-events: none;
 }
 
@@ -237,19 +237,22 @@ body .page {
   transform: translateY(-3px) scale(0.97);
 }
 
-/* Basket image container */
+/* Basket image container — warm wood tone so darken blend removes white bg */
 .level-basket {
   position: relative;
   width: 100%;
+  background: #C68642;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-/* PNG basket — use multiply to blend out white background */
+/* PNG basket — darken blends white bg into shelf color */
 .basket-img {
   width: 100%;
   height: auto;
   display: block;
   object-fit: contain;
-  mix-blend-mode: multiply;
+  mix-blend-mode: darken;
 }
 
 /* Level number badge */
