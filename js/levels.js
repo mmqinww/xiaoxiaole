@@ -27,7 +27,7 @@ const LEVELS = [
     gridCols: 3,
     gridRows: 3,
     stackModes: { stack1x1: 0.3, stack1x2: 0.35, stack1x4: 0.35 },
-    basket: 'basket-1',
+    basket: 'basket-1-nobg',
   },
   {
     id: 2,
@@ -39,7 +39,7 @@ const LEVELS = [
     gridCols: 5,
     gridRows: 5,
     stackModes: { stack1x1: 0.2, stack1x2: 0.3, stack1x4: 0.5 },
-    basket: 'basket-4',
+    basket: 'basket-4-nobg',
   },
 ];
 

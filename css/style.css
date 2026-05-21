@@ -246,14 +246,13 @@ body .page {
   background: transparent;
 }
 
-/* PNG basket — multiply blends white bg away over warm backgrounds */
+/* Transparent PNG basket — drop-shadow for shelf depth */
 .basket-img {
   width: 100%;
   height: auto;
   display: block;
   object-fit: contain;
-  mix-blend-mode: multiply;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45));
 }
 
 /* Level number badge */
