@@ -275,7 +275,7 @@ const UI = {
    */
   showWinModal(levelIndex, time) {
     const level = LEVELS[levelIndex];
-    const shareText = `🎮 消了个消 · ${level.name} ✅\n我用了${time}秒通关！\n🏆 你能比我更快吗？\n👉 来挑战！`;
+    const shareText = `我${time}秒通关了「消了个消」${level.name} 🏆\n说实话这关有点难，你应该过不了…\n试试看？👉 https://mmqinww.github.io/xiaoxiaole/`;
     
     this.showModal({
       title: '🎉 恭喜通关！',
@@ -308,7 +308,7 @@ const UI = {
    */
   showFailModal(levelIndex) {
     const level = LEVELS[levelIndex];
-    const shareText = `🎮 消了个消 · ${level.name} ❌\n我倒在了${level.name}...\n🏆 只有3%的人能通关！\n👉 你来试试？`;
+    const shareText = `我卡在「消了个消」${level.name}了 😤\n这关真的有点阴间，但我不信你能过…\n来试试？👉 https://mmqinww.github.io/xiaoxiaole/`;
     
     this.showModal({
       title: '😵 游戏结束',
