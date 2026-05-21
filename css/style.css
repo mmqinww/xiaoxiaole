@@ -1,6 +1,6 @@
 /**
  * 消了个消 - 样式表
- * 移动端优先、圆角卡片、柔和配色、现代简约
+ * 动物主题 · 移动端优先 · 卡通可爱风
  */
 
 /* ============= Reset & Base ============= */
@@ -15,7 +15,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #FF9800 0%, #4CAF50 100%);
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -40,19 +40,157 @@ html, body {
 .start-content {
   text-align: center;
   animation: fadeInUp 0.6s ease;
+  position: relative;
+}
+
+/* Floating animal decorations */
+.floating-animals {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.float-animal {
+  position: absolute;
+  font-size: 2.2rem;
+  animation: floatUpDown 4s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+.float-1 {
+  top: 8%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.float-2 {
+  top: 15%;
+  right: 12%;
+  animation-delay: 1s;
+  font-size: 1.8rem;
+}
+
+.float-3 {
+  bottom: 20%;
+  left: 8%;
+  animation-delay: 2s;
+  font-size: 2rem;
+}
+
+.float-4 {
+  bottom: 12%;
+  right: 10%;
+  animation-delay: 0.5s;
+  font-size: 1.6rem;
+}
+
+/* Paw prints scattered */
+.paw-prints {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.paw {
+  position: absolute;
+  font-size: 1.2rem;
+  opacity: 0;
+  animation: pawFadeIn 3s ease-in-out infinite;
+}
+
+.paw-1 {
+  top: 25%;
+  left: 20%;
+  animation-delay: 0.5s;
+}
+
+.paw-2 {
+  top: 40%;
+  right: 18%;
+  animation-delay: 1.2s;
+}
+
+.paw-3 {
+  top: 60%;
+  left: 30%;
+  animation-delay: 2s;
+}
+
+.paw-4 {
+  bottom: 30%;
+  right: 25%;
+  animation-delay: 0.8s;
+}
+
+.paw-5 {
+  top: 75%;
+  left: 15%;
+  animation-delay: 1.8s;
+}
+
+/* Mascot area */
+.mascot-area {
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+  animation: gentleBounce 2s ease-in-out infinite;
+}
+
+.mascot-emoji {
+  font-size: 5rem;
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+}
+
+.mascot-friends {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.mascot-friends span {
+  font-size: 2rem;
+  animation: friendBounce 1.5s ease-in-out infinite;
+}
+
+.mascot-friends span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.mascot-friends span:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.mascot-friends span:nth-child(3) {
+  animation-delay: 0.6s;
 }
 
 .game-title {
   font-size: 3rem;
   color: #fff;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2);
   margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+  letter-spacing: 4px;
 }
 
 .game-subtitle {
   font-size: 1rem;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.9);
   margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
 }
 
 .btn-primary {
@@ -60,22 +198,25 @@ html, body {
   padding: 16px 48px;
   font-size: 1.2rem;
   font-weight: 600;
-  color: #764ba2;
+  color: #E65100;
   background: #fff;
   border: none;
   border-radius: 50px;
   cursor: pointer;
   box-shadow: 0 8px 30px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+  animation: btnPulse 2s ease-in-out infinite;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 12px 40px rgba(0,0,0,0.3);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 /* ============= Level Select Page ============= */
@@ -91,6 +232,7 @@ html, body {
   color: #fff;
   text-align: center;
   margin-bottom: 20px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 #level-grid {
@@ -108,11 +250,24 @@ html, body {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: 2px solid rgba(255,152,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.level-card::before {
+  content: '🐾';
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 0.9rem;
+  opacity: 0.2;
 }
 
 .level-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  border-color: rgba(255,152,0,0.5);
 }
 
 .level-card:active {
@@ -128,7 +283,7 @@ html, body {
 
 .level-desc {
   font-size: 0.85rem;
-  color: #764ba2;
+  color: #E65100;
   font-weight: 500;
   margin-bottom: 6px;
 }
@@ -201,14 +356,13 @@ html, body {
   justify-content: center;
   width: 100%;
   min-height: 200px;
-  max-height: calc(100vh - 220px); /* 留出顶栏+槽位+道具栏空间 */
+  max-height: calc(100vh - 220px);
   overflow: hidden;
 }
 
 #blocks-container {
   position: relative;
   margin: 0 auto;
-  /* transform/scale 由 JS 动态设置 */
 }
 
 /* Block */
@@ -290,10 +444,11 @@ html, body {
   justify-content: center;
   gap: 4px;
   padding: 12px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.2);
   border-radius: 16px;
   backdrop-filter: blur(10px);
   min-height: 56px;
+  border: 1px solid rgba(255,255,255,0.3);
 }
 
 .slot-item {
@@ -418,7 +573,7 @@ html, body {
 .modal-time {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #764ba2;
+  color: #E65100;
 }
 
 .modal-level {
@@ -453,7 +608,7 @@ html, body {
 .share-btn {
   padding: 8px 16px;
   font-size: 0.8rem;
-  background: #667eea;
+  background: #FF9800;
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -462,7 +617,7 @@ html, body {
 }
 
 .share-btn:hover {
-  background: #5a6fd6;
+  background: #F57C00;
 }
 
 .modal-buttons {
@@ -485,7 +640,7 @@ html, body {
 }
 
 .modal-btn.primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #FF9800, #4CAF50);
   color: #fff;
 }
 
@@ -534,10 +689,75 @@ html, body {
   }
 }
 
+@keyframes floatUpDown {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-12px) rotate(3deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-2deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+}
+
+@keyframes gentleBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes friendBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.1);
+  }
+}
+
+@keyframes pawFadeIn {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.8) rotate(-10deg);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes btnPulse {
+  0%, 100% {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  }
+  50% {
+    box-shadow: 0 8px 30px rgba(255,152,0,0.4);
+  }
+}
+
 /* ============= Responsive ============= */
 @media (max-width: 375px) {
   .game-title {
     font-size: 2.5rem;
+  }
+  
+  .mascot-emoji {
+    font-size: 4rem;
+  }
+  
+  .mascot-friends span {
+    font-size: 1.6rem;
+  }
+  
+  .float-animal {
+    font-size: 1.6rem;
   }
   
   #level-grid {
@@ -613,5 +833,13 @@ html, body {
   
   .blocks-area {
     min-height: 350px;
+  }
+  
+  .mascot-emoji {
+    font-size: 6rem;
+  }
+  
+  .mascot-friends span {
+    font-size: 2.5rem;
   }
 }
