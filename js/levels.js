@@ -20,7 +20,7 @@ const LEVELS = [
   {
     id: 1,
     name: '第1关',
-    desc: '热身',
+    desc: '',
     patternCount: 3,
     totalBlocks: 21,
     layers: 4,
@@ -32,7 +32,7 @@ const LEVELS = [
   {
     id: 2,
     name: '第2关',
-    desc: '💀地狱',
+    desc: '',
     patternCount: 12,
     totalBlocks: 99,   // 99张（12种图案，保证3的倍数可整除）
     layers: 8,
