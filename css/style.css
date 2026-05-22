@@ -145,7 +145,7 @@ body .page {
 
 /* ============= Level Select Page ============= */
 #page-levels {
-  background: url('../assets/shelf-bg.png') center/cover no-repeat;
+  background: url('../assets/shelf-bg.jpg') center/cover no-repeat;
   background-color: #5D4037;
   padding: 0;
   justify-content: center;
